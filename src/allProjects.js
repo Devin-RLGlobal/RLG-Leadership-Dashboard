@@ -58,7 +58,7 @@ function TaskTable() {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/todos"); // Replace with your API
+      const response = await axios.get("http://localhost:3000/todos"); 
       const newProjects = response.data.data.todoQueries.todos.items;
       const uniqueTasks = new Set();
 
@@ -74,7 +74,7 @@ function TaskTable() {
                 title: item.title,
                 description: item.text || "No description",
                 dueDate: item.duedAt ? new Date(item.duedAt).toLocaleDateString() : "No due date",
-                priority: item.customFields[4]?.value ?? "Normal",
+                priority: item.customFields[4]?.value ?? "Low",
                 assignee: `${user.firstName} ${user.lastName}`,
                 tag: item.customFields[1]?.value ?? "Unknown",
                 requestor: item.customFields[2]?.value ?? "",
@@ -93,11 +93,26 @@ function TaskTable() {
     }
   };
 
-  const filteredTasks = tasks.filter(
-    (task) =>
-      task.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (filterType ? task.tag === filterType : true)
-  );
+  const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+
+  const filteredTasks = tasks
+    .filter(
+      (task) =>
+        task.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (filterType ? task.tag === filterType : true)
+    )
+    .sort((a, b) => {
+      const priorityA = priorityOrder[a.priority] || 4;
+      const priorityB = priorityOrder[b.priority] || 4;
+      console.log(b)
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+  
+      return a.title.localeCompare(b.Assignee);
+    });
+  
+  
 
   return (
     <Container maxWidth="xl" sx={{ paddingY: 4 }}>
@@ -160,7 +175,18 @@ function TaskTable() {
                   <TableCell>
                     <PriorityChip label={task.priority} priority={task.priority} />
                   </TableCell>
-                  <TableCell>{task.dueDate}</TableCell>
+                  <TableCell
+  sx={{
+    fontWeight: "bold",
+    color: new Date(task.dueDate) < new Date().setHours(0, 0, 0, 0)
+      ? "#d32f2f"
+      : new Date(task.dueDate).toDateString() === new Date().toDateString()
+      ? "#ff9800" 
+      : "#388e3c", 
+  }}
+>
+  {task.dueDate}
+</TableCell>
                   <TableCell
                     sx={{
                       maxWidth: 300,

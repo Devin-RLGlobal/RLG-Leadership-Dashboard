@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Grid, Card, CardContent, Typography, Chip, Button, Box } from '@mui/material';
+import { styled } from "@mui/system";
 
+const PriorityChip = styled(Chip)(({ priority }) => ({
+  borderRadius: "15px",
+  fontWeight: "bold",
+  fontSize: "0.85rem",
+  color: priority === "External Marketing" ? "#d32f2f" : "#388e3c",
+  backgroundColor: priority === "External Marketing" ? "#fce4e4" : "#e8f5e9",
+}));
 const names = ["Blystra", "Felton", "Rieger", "Harris", "Lewis", "Kimble", "Ward", "Peterson", "Kienzle", "Weaver", "Lee"];
 
 function TaskBoard() {
@@ -135,10 +143,8 @@ function TaskBoard() {
               color={task.customFields[4]?.value === "High" ? "error" : task.customFields[4]?.value === "Medium" ? "warning" : "default"} 
               sx={{ fontSize: "0.7rem", fontWeight: "bold", height: "20px" }}
             />
-            <Chip 
-              label={task.customFields[1]?.value || "General"} 
-              sx={{ backgroundColor: "#6c63ff", color: "white", fontSize: "0.7rem", fontWeight: "bold", height: "20px" }}
-            />
+                    <PriorityChip label={task.todoList.title} priority={task.todoList.title} />
+
           </Box>
         </CardContent>
       </Card>

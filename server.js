@@ -45,6 +45,10 @@ query ListOfRecordsBetweenAStartAndDueDate {
           value
           name
         }
+          todoList {
+id
+title
+}
         users {
           fullName
           lastName

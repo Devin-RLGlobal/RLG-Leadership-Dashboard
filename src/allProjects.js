@@ -42,8 +42,8 @@ const TypeChip = styled(Chip)(({ type }) => ({
   borderRadius: "15px",
   fontWeight: "bold",
   fontSize: "0.85rem",
-  color: type === "Game Changer" ? "#6200ea" : "#1565c0",
-  backgroundColor: type === "Game Changer" ? "#ede7f6" : "#e3f2fd",
+  color: type === "Game Changers" ? "#d32f2f" : type === "Fundamentals" ? "#ff9800" : type === "External Marketing" ? "#d32f2f" :"#388e3c",
+  backgroundColor: type === "Game Changers" ? "#fce4e4" : type === "Fundamentals" ? "#fff3e0" : type === "External Marketing" ? "#fce4e4" : "#e8f5e9",
 }));
 
 function TaskTable() {
@@ -76,7 +76,7 @@ function TaskTable() {
                 dueDate: item.duedAt ? new Date(item.duedAt).toLocaleDateString() : "No due date",
                 priority: item.customFields[4]?.value ?? "Low",
                 assignee: `${user.firstName} ${user.lastName}`,
-                tag: item.customFields[1]?.value ?? "Unknown",
+                tag: item.todoList.title,
                 requestor: item.customFields[2]?.value ?? "",
               };
             }
@@ -135,9 +135,12 @@ function TaskTable() {
               sx={{ backgroundColor: "white", borderRadius: "8px" }}
             >
               <MenuItem value="">All Types</MenuItem>
-              <MenuItem value="Game Changer">Game Changers</MenuItem>
-              <MenuItem value="Fundamental">Fundamental</MenuItem>
+              <MenuItem value="Game Changers">Game Changers</MenuItem>
+              <MenuItem value="Fundamentals">Fundamentals</MenuItem>
               <MenuItem value="Parking Lot">Parking Lot</MenuItem>
+              <MenuItem value="External Marketing">External Marketing</MenuItem>
+              <MenuItem value="Internal Marketing">Internal Marketing</MenuItem>
+
             </Select>
           </FormControl>
         </Box>

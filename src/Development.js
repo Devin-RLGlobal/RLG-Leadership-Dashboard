@@ -1,7 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Grid, Card, CardContent, Typography, Chip, Button, Box } from '@mui/material';
+import { styled } from "@mui/system";
 
+const PriorityChip = styled(Chip)(({ priority }) => ({
+  borderRadius: "15px",
+  fontWeight: "bold",
+  fontSize: "0.85rem",
+  color: priority === "Game Changers" ? "#d32f2f" : priority === "Fundamentals" ? "#ff9800" : "#388e3c",
+  backgroundColor: priority === "Game Changers" ? "#fce4e4" : priority === "Fundamentals" ? "#fff3e0" : "#e8f5e9",
+}));
+const TypeChip = styled(Chip)(({ type }) => ({
+  borderRadius: "15px",
+  fontWeight: "bold",
+  fontSize: "0.85rem",
+  color: type === "High" ? "#d32f2f" : type  === "Medium" ? "#ff9800" : "#388e3c",
+  backgroundColor: type === "High" ? "#fce4e4" : type === "Medium" ? "#fff3e0" : "#e8f5e9",
+}));
 const names = ["Kazmierczak", "Sprung", "Hiscock", "Younis", "Nobles", "Glynn", "Komatineni", "Moure"];
 
 function TaskBoard() {
@@ -19,39 +34,42 @@ function TaskBoard() {
   const appendUserProjects = (newData) => {
     setProjects((prevProjects) => {
       const updatedProjects = { ...prevProjects };
-
+  
       newData.forEach((item) => {
+        if (item.done) return;
+        item.customFields[4] = {"name": item.customFields[4]?.name ?? "Low", "value": item.customFields[4]?.value ?? "Low",}
         item.users.forEach((user) => {
           if (!names.includes(user.lastName)) return;
-
+  
           if (!updatedProjects[user.id]) {
             updatedProjects[user.id] = { user: user, tasks: [] };
           }
-
+  
           const existingProjectIds = new Set(updatedProjects[user.id].tasks.map((p) => p.id));
-
+  
           if (!existingProjectIds.has(item.id)) {
             updatedProjects[user.id].tasks.push(item);
           }
-
           updatedProjects[user.id].tasks.sort((a, b) => {
             const priorityA = priorityRank[a.customFields?.find(f => f.name === "Priority")?.value] || 1;
             const priorityB = priorityRank[b.customFields?.find(f => f.name === "Priority")?.value] || 1;
             return priorityB - priorityA;
           });
-
+  
           updatedProjects[user.id].tasks = updatedProjects[user.id].tasks.slice(0, 3);
         });
       });
-
+  
       return updatedProjects;
     });
   };
+  
 
   const fetchProjects = async (currentSkip) => {
     try {
       const response = await axios.get(`http://localhost:3000/todos?skip=${currentSkip}`);
       const newProjects = response.data.data.todoQueries.todos.items;
+      console.log(newProjects)
       appendUserProjects(newProjects);
       setHasNextPage(response.data.data.todoQueries.todos.pageInfo.hasNextPage);
       setSkipCount(response.data.data.todoQueries.todos.pageInfo.perPage);
@@ -130,15 +148,10 @@ function TaskBoard() {
             Due: {task.duedAt ? new Date(task.duedAt).toLocaleDateString() : "No due date"}
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-            <Chip 
-              label={task.customFields[4]?.value || "No Priority"} 
-              color={task.customFields[4]?.value === "High" ? "error" : task.customFields[4]?.value === "Medium" ? "warning" : "default"} 
-              sx={{ fontSize: "0.7rem", fontWeight: "bold", height: "20px" }}
-            />
-            <Chip 
-              label={task.customFields[1]?.value || "General"} 
-              sx={{ backgroundColor: "#6c63ff", color: "white", fontSize: "0.7rem", fontWeight: "bold", height: "20px" }}
-            />
+          <TypeChip label={task.customFields[4]?.value} type={task.customFields[4]?.value} />
+
+                    <PriorityChip label={task.todoList.title} priority={task.todoList.title} />
+
           </Box>
         </CardContent>
       </Card>

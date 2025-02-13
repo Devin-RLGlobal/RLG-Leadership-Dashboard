@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Grid, Card, CardContent, Typography, Chip, Button, Box } from '@mui/material';
+import { styled } from "@mui/system";
+
+const PriorityChip = styled(Chip)(({ priority }) => ({
+  borderRadius: "15px",
+  fontWeight: "bold",
+  fontSize: "0.85rem",
+  color: priority === "High" ? "#d32f2f" : priority === "Medium" ? "#ff9800" : "#388e3c",
+  backgroundColor: priority === "High" ? "#fce4e4" : priority === "Medium" ? "#fff3e0" : "#e8f5e9",
+}));
 
 const names = ["Reddy", "Davidson", "Lantigua", "Rosauer", "Babu"];
 
@@ -15,7 +24,14 @@ function TaskBoard() {
   }, [skipCount]);
 
   const priorityRank = { "High": 3, "Medium": 2, "Low": 1 };
-
+  const TypeChip = styled(Chip)(({ type }) => ({
+    borderRadius: "15px",
+    fontWeight: "bold",
+    fontSize: "0.85rem",
+    color: type === "Game Changer" ? "#6200ea" : "#1565c0",
+    backgroundColor: type === "Game Changer" ? "#ede7f6" : "#e3f2fd",
+  }));
+  
   const appendUserProjects = (newData) => {
     setProjects((prevProjects) => {
       const updatedProjects = { ...prevProjects };
@@ -135,10 +151,8 @@ function TaskBoard() {
               color={task.customFields[4]?.value === "High" ? "error" : task.customFields[4]?.value === "Medium" ? "warning" : "default"} 
               sx={{ fontSize: "0.7rem", fontWeight: "bold", height: "20px" }}
             />
-            <Chip 
-              label={task.customFields[1]?.value || "General"} 
-              sx={{ backgroundColor: "#6c63ff", color: "white", fontSize: "0.7rem", fontWeight: "bold", height: "20px" }}
-            />
+                    <PriorityChip label={task.todoList.title} priority={task.todoList.title} />
+
           </Box>
         </CardContent>
       </Card>

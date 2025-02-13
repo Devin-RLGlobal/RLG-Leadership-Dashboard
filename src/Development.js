@@ -141,7 +141,7 @@ function TaskBoard() {
       }}>
         <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}> 
           <Typography variant="body1" sx={{ fontWeight: "bold", fontSize: "0.9rem" }}>{task.title}</Typography>
-          <Typography variant="body2" color="textSecondary" sx={{ fontSize: "0.8rem", flexGrow: 1 }}>
+          <Typography variant="body2" color="textSecondary" sx={{ fontSize: "0.8rem", flexGrow: 1, wordBreak:'break-all' }}>
             {trimDescription(task.text)}
           </Typography>
           <Typography variant="body2" color="textSecondary" sx={{ fontSize: "0.8rem", marginBottom: 1 }}>

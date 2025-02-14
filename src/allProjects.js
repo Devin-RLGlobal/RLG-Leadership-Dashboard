@@ -16,7 +16,8 @@ import {
   InputLabel,
   FormControl,
   Box,
-  Typography,
+  TableSortLabel,
+  Typography
 } from "@mui/material";
 import { styled } from "@mui/system";
 
@@ -51,6 +52,8 @@ function TaskTable() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortBy, setSortBy] = useState("priority"); 
 
   useEffect(() => {
     fetchProjects();
@@ -61,8 +64,11 @@ function TaskTable() {
       const response = await axios.get("http://localhost:3000/todos"); 
       const newProjects = response.data.data.todoQueries.todos.items;
       const uniqueTasks = new Set();
+      console.log(newProjects)
 
       const formattedTasks = newProjects
+      .filter(item => !item.done)
+
         .flatMap((item) =>
           item.users.map((user) => {
             const taskId = `${item.id}-${user.id}-${item.createdBy.fullName}`;
@@ -93,26 +99,34 @@ function TaskTable() {
     }
   };
 
-  const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+  const priorityOrder = { High: 3, Medium: 2, Low: 1 };
 
-  const filteredTasks = tasks
+  const toggleSortOrder = (column) => {
+    if (sortBy === column) {
+      setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(column);
+      setSortOrder("desc"); 
+    }
+  };
+
+  const sortedTasks = [...tasks]
     .filter(
       (task) =>
         task.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (filterType ? task.tag === filterType : true)
     )
     .sort((a, b) => {
-      const priorityA = priorityOrder[a.priority] || 4;
-      const priorityB = priorityOrder[b.priority] || 4;
-      console.log(b)
-      if (priorityA !== priorityB) {
-        return priorityA - priorityB;
+      if (sortBy === "priority") {
+        const priorityA = priorityOrder[a.priority] || 4;
+        const priorityB = priorityOrder[b.priority] || 4;
+        return sortOrder === "asc" ? priorityA - priorityB : priorityB - priorityA;
+      } else if (sortBy === "assignee") {
+        return sortOrder === "asc" ? a.assignee.localeCompare(b.assignee) : b.assignee.localeCompare(a.assignee);
+      } else {
+        return sortOrder === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
       }
-  
-      return a.title.localeCompare(b.Assignee);
     });
-  
-  
 
   return (
     <Container maxWidth="xl" sx={{ paddingY: 4 }}>
@@ -140,7 +154,6 @@ function TaskTable() {
               <MenuItem value="Parking Lot">Parking Lot</MenuItem>
               <MenuItem value="External Marketing">External Marketing</MenuItem>
               <MenuItem value="Internal Marketing">Internal Marketing</MenuItem>
-
             </Select>
           </FormControl>
         </Box>
@@ -153,10 +166,34 @@ function TaskTable() {
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: "#eeeeee" }}>
-              <TableCell sx={{ fontWeight: "bold" }}>Project Title</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Assignee</TableCell>
+              <TableCell sx={{ fontWeight: "bold", cursor: "pointer" }}>
+                <TableSortLabel
+                  active={sortBy === "title"}
+                  direction={sortOrder}
+                  onClick={() => toggleSortOrder("title")}
+                >
+                  Project Title
+                </TableSortLabel>
+              </TableCell>
+              <TableCell sx={{ fontWeight: "bold", cursor: "pointer" }}>
+                <TableSortLabel
+                  active={sortBy === "assignee"}
+                  direction={sortOrder}
+                  onClick={() => toggleSortOrder("assignee")}
+                >
+                  Assignee
+                </TableSortLabel>
+              </TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Requestor</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Priority</TableCell>
+              <TableCell sx={{ fontWeight: "bold", cursor: "pointer" }}>
+                <TableSortLabel
+                  active={sortBy === "priority"}
+                  direction={sortOrder}
+                  onClick={() => toggleSortOrder("priority")}
+                >
+                  Priority
+                </TableSortLabel>
+              </TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Due Date</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Description</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Stage</TableCell>
@@ -165,45 +202,32 @@ function TaskTable() {
           <TableBody>
             {loading ? (
               <StyledTableRow>
-                <TableCell colSpan={7} align="center">
-                  Loading...
-                </TableCell>
+                <TableCell colSpan={7} align="center">Loading...</TableCell>
               </StyledTableRow>
             ) : (
-              filteredTasks.map((task) => (
+              sortedTasks.map((task) => (
                 <StyledTableRow key={task.id}>
-                  <TableCell sx={{ fontWeight: "bold" }}>{task.title}</TableCell>
+                  <TableCell>{task.title}</TableCell>
                   <TableCell>{task.assignee}</TableCell>
                   <TableCell>{task.requestor}</TableCell>
-                  <TableCell>
-                    <PriorityChip label={task.priority} priority={task.priority} />
-                  </TableCell>
-                  <TableCell
-  sx={{
-    fontWeight: "bold",
-    color: new Date(task.dueDate) < new Date().setHours(0, 0, 0, 0)
-      ? "#d32f2f"
-      : new Date(task.dueDate).toDateString() === new Date().toDateString()
-      ? "#ff9800" 
-      : "#388e3c", 
-  }}
->
-  {task.dueDate}
+                  <TableCell><PriorityChip label={task.priority} priority={task.priority} /></TableCell>
+                  <TableCell>{task.dueDate}</TableCell>
+                  <TableCell sx={{ maxWidth: 250, overflow: "hidden" }}>
+  <Typography
+    variant="body2"
+    sx={{
+      display: "-webkit-box",
+      WebkitBoxOrient: "vertical",
+      WebkitLineClamp: 2, 
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    }}
+    title={task.description}
+  >
+    {task.description}
+  </Typography>
 </TableCell>
-                  <TableCell
-                    sx={{
-                      maxWidth: 300,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                    title={task.description}
-                  >
-                    {task.description}
-                  </TableCell>
-                  <TableCell>
-                    <TypeChip label={task.tag} type={task.tag} />
-                  </TableCell>
+                  <TableCell><TypeChip label={task.tag} type={task.tag} /></TableCell>
                 </StyledTableRow>
               ))
             )}

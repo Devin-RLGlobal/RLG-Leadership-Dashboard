@@ -61,7 +61,7 @@ function TaskTable() {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/todos");
+      const response = await axios.get("https://sea-lion-app-hcfn5.ondigitalocean.app/8080/todos");
       const newProjects = response.data.data.todoQueries.todos.items;
       const uniqueTasks = new Set();
 

@@ -67,7 +67,7 @@ function TaskBoard() {
 
   const fetchProjects = async (currentSkip) => {
     try {
-      const response = await axios.get(`http://localhost:3000/todos?skip=${currentSkip}`);
+      const response = await axios.get(`https://sea-lion-app-hcfn5.ondigitalocean.app:8080/todos?skip=${currentSkip}`);
       const newProjects = response.data.data.todoQueries.todos.items;
       console.log(newProjects)
       appendUserProjects(newProjects);

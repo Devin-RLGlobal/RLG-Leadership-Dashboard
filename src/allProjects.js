@@ -167,7 +167,6 @@ function TaskTable() {
                     <MenuItem value="">All Types</MenuItem>
                     <MenuItem value="Game Changers">Game Changers</MenuItem>
                     <MenuItem value="Fundamentals">Fundamentals</MenuItem>
-                    <MenuItem value="Parking Lot">Parking Lot</MenuItem>
                     <MenuItem value="External Marketing">External Marketing</MenuItem>
                     <MenuItem value="Internal Marketing">Internal Marketing</MenuItem>
                   </Select>

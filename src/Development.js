@@ -38,6 +38,7 @@ function TaskBoard() {
       newData.forEach((item) => {
         if (item.done) return;
         item.customFields[4] = {"name": item.customFields[4]?.name ?? "Low", "value": item.customFields[4]?.value ?? "Low",}
+        if(item.customFields[4].value == "Low") return;
         item.users.forEach((user) => {
           if (!names.includes(user.lastName)) return;
   
@@ -122,7 +123,7 @@ function TaskBoard() {
                 <Grid 
   container 
   spacing={4} 
-  justifyContent="space-between" 
+  justifyContent="flex-start" 
   alignItems="stretch"
   sx={{ flexWrap: "wrap", width: "100%" }} 
 >

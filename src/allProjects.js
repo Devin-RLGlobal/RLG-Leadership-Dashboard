@@ -61,29 +61,44 @@ function TaskTable() {
     fetchProjects();
   }, []);
 
+  const validStages = ["Fundamentals", "Game Changers", "Internal Marketing", "External Marketing", "Parking Lot"];
+
   const fetchProjects = async () => {
     try {
       const response = await axios.get("https://sea-lion-app-hcfn5.ondigitalocean.app/todos");
       const newProjects = response.data.data.todoQueries.todos.items;
+  
       const uniqueTasks = new Set();
       const uniqueTags = new Set();
+  
       const formattedTasks = newProjects
-        .filter(item => !item.done)
-        .flatMap((item) =>
-          item.users.map((user) => {
+        .filter(item => !item.done && validStages.includes(item.todoList.title)) // Ensure stage is valid
+        .flatMap((item) => {
+          if (!item.users || item.users.length === 0) {
+            return {
+              id: item.id,
+              title: item.title,
+              description: item.text || "No description",
+              dueDate: item.duedAt ? new Date(item.duedAt).toLocaleDateString() : "No due date",
+              dueDateRaw: item.duedAt ? new Date(item.duedAt) : null,
+              priority: item.customFields[4]?.value ?? "Low",
+              assignee: "",
+              tag: item.todoList.title,
+              requestor: item.customFields[2]?.value ?? "",
+            };
+          }
+  
+          return item.users.map((user) => {
             const taskId = `${item.id}-${user.id}-${item.createdBy.fullName}`;
-
             if (!uniqueTasks.has(taskId)) {
               uniqueTasks.add(taskId);
-              uniqueTags.add(item.todoList.title)
-              const dueDateRaw = item.duedAt ? new Date(item.duedAt) : null;
-
+              uniqueTags.add(item.todoList.title);
               return {
                 id: taskId,
                 title: item.title,
                 description: item.text || "No description",
-                dueDate: dueDateRaw ? dueDateRaw.toLocaleDateString() : "No due date",
-                dueDateRaw: dueDateRaw,
+                dueDate: item.duedAt ? new Date(item.duedAt).toLocaleDateString() : "No due date",
+                dueDateRaw: item.duedAt ? new Date(item.duedAt) : null,
                 priority: item.customFields[4]?.value ?? "Low",
                 assignee: `${user.firstName} ${user.lastName}`,
                 tag: item.todoList.title,
@@ -91,19 +106,18 @@ function TaskTable() {
               };
             }
             return null;
-          })
-        )
-        .filter(Boolean);
-      
-      console.log(uniqueTags)
+          }).filter(Boolean);
+        });
+  
       setTasks(formattedTasks);
-      setTags([...uniqueTags])
+      setTags((prevTags) => Array.from(new Set([...prevTags, ...uniqueTags])));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching projects", error);
       setLoading(false);
     }
   };
+  
 
   const priorityOrder = { High: 3, Medium: 2, Low: 1 };
   const stageOrder = {"Game Changers": 5, "Fundamentals": 4, "External Marketing": 3, "Internal Marketing": 2, "Parking Lot": 1};
@@ -169,11 +183,12 @@ function TaskTable() {
                     sx={{ backgroundColor: "white", borderRadius: "8px" }}
                   >
                     <MenuItem value="">All Types</MenuItem>
-                    {tags.map((option) => (
-  <MenuItem key={option} value={option}>
-    {option}
-  </MenuItem>
-))}
+                    <MenuItem value="Internal Marketing">Internal Marketing</MenuItem>
+                    <MenuItem value="External Marketing">External Marketing</MenuItem>
+                    <MenuItem value="Parking Lot">Parking Lot</MenuItem>
+                    <MenuItem value="Fundamentals">Fundamentals</MenuItem>
+                    <MenuItem value="Game Changers">Game Changers</MenuItem>
+
 
 
                   </Select>

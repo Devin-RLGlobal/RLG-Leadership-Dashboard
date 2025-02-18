@@ -43,8 +43,8 @@ const TypeChip = styled(Chip)(({ type }) => ({
   borderRadius: "15px",
   fontWeight: "bold",
   fontSize: "0.85rem",
-  color: type === "Game Changers" ? "#d32f2f" : type === "Fundamentals" ? "#ff9800" : type === "External Marketing" ? "#d32f2f" : type === "Parking Lot" ? "#d32f2f" : "#388e3c",
-  backgroundColor: type === "Game Changers" ? "#fce4e4" : type === "Fundamentals" ? "#fff3e0" : type === "External Marketing" ? "#fce4e4" : type === "Parking Lot" ? "#d32f2f" : "#e8f5e9",
+  color: type === "Game Changers" ? "#d32f2f" : type === "Fundamentals" ? "#ff9800" : type === "External Marketing" ? "#d32f2f" : "#388e3c",
+  backgroundColor: type === "Game Changers" ? "#fce4e4" : type === "Fundamentals" ? "#fff3e0" : type === "External Marketing" ? "#fce4e4" : "#e8f5e9",
 }));
 
 function TaskTable() {
@@ -167,7 +167,6 @@ function TaskTable() {
                     <MenuItem value="">All Types</MenuItem>
                     <MenuItem value="Game Changers">Game Changers</MenuItem>
                     <MenuItem value="Fundamentals">Fundamentals</MenuItem>
-                    <MenuItem value="Parking Lot">Parking Lot</MenuItem>
                     <MenuItem value="External Marketing">External Marketing</MenuItem>
                     <MenuItem value="Internal Marketing">Internal Marketing</MenuItem>
                   </Select>

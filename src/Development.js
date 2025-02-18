@@ -17,7 +17,7 @@ const TypeChip = styled(Chip)(({ type }) => ({
   color: type === "High" ? "#d32f2f" : type  === "Medium" ? "#ff9800" : "#388e3c",
   backgroundColor: type === "High" ? "#fce4e4" : type === "Medium" ? "#fff3e0" : "#e8f5e9",
 }));
-const names = ["Kazmierczak", "Sprung", "Hiscock", "Younis", "Nobles", "Glynn", "Komatineni", "Moure"];
+const names = ["Kazmierczak", "Durham", "Sprung", "Hiscock", "Younis", "Nobles", "Glynn", "Komatineni", "Moure"];
 
 function TaskBoard() {
   const [projects, setProjects] = useState({});

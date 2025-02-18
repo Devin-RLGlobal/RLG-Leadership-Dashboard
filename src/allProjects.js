@@ -72,7 +72,7 @@ function TaskTable() {
       const uniqueTags = new Set();
   
       const formattedTasks = newProjects
-        .filter(item => !item.done && validStages.includes(item.todoList.title)) // Ensure stage is valid
+        .filter(item => !item.done && validStages.includes(item.todoList.title))
         .flatMap((item) => {
           if (!item.users || item.users.length === 0) {
             return {
@@ -82,7 +82,7 @@ function TaskTable() {
               dueDate: item.duedAt ? new Date(item.duedAt).toLocaleDateString() : "No due date",
               dueDateRaw: item.duedAt ? new Date(item.duedAt) : null,
               priority: item.customFields[4]?.value ?? "Low",
-              assignee: "",
+              assignee: "Unassigned",
               tag: item.todoList.title,
               requestor: item.customFields[2]?.value ?? "",
             };
@@ -204,7 +204,7 @@ function TaskTable() {
                   Project Title
                 </TableSortLabel>
               </TableCell>
-              <TableCell>
+              <TableCell >
                 <TableSortLabel active={sortBy === "assignee"} direction={sortOrder} onClick={() => toggleSortOrder("assignee")}>
                   Assignee
                 </TableSortLabel>
@@ -241,7 +241,15 @@ function TaskTable() {
               sortedTasks.map((task) => (
                 <StyledTableRow key={task.id}>
                   <TableCell>{task.title}</TableCell>
-                  <TableCell>{task.assignee}</TableCell>
+                  <TableCell
+  sx={{
+    fontWeight: task.assignee === "Unassigned" ? "bold" : "inherit" ,
+    color: task.assignee === "Unassigned" ? "#d32f2f" : "inherit",
+  }}
+>
+  {task.assignee}
+</TableCell>
+
                   <TableCell>{task.requestor}</TableCell>
                   <TableCell><PriorityChip label={task.priority} priority={task.priority} /></TableCell>
                   <TableCell

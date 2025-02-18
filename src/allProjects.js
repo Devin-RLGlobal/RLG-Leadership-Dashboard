@@ -49,6 +49,8 @@ const TypeChip = styled(Chip)(({ type }) => ({
 
 function TaskTable() {
   const [tasks, setTasks] = useState([]);
+  const [tags, setTags] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -64,7 +66,7 @@ function TaskTable() {
       const response = await axios.get("https://sea-lion-app-hcfn5.ondigitalocean.app/todos");
       const newProjects = response.data.data.todoQueries.todos.items;
       const uniqueTasks = new Set();
-
+      const uniqueTags = new Set();
       const formattedTasks = newProjects
         .filter(item => !item.done)
         .flatMap((item) =>
@@ -73,7 +75,7 @@ function TaskTable() {
 
             if (!uniqueTasks.has(taskId)) {
               uniqueTasks.add(taskId);
-
+              uniqueTags.add(item.todoList.title)
               const dueDateRaw = item.duedAt ? new Date(item.duedAt) : null;
 
               return {
@@ -92,8 +94,10 @@ function TaskTable() {
           })
         )
         .filter(Boolean);
-
+      
+      console.log(uniqueTags)
       setTasks(formattedTasks);
+      setTags([...uniqueTags])
       setLoading(false);
     } catch (error) {
       console.error("Error fetching projects", error);
@@ -165,10 +169,13 @@ function TaskTable() {
                     sx={{ backgroundColor: "white", borderRadius: "8px" }}
                   >
                     <MenuItem value="">All Types</MenuItem>
-                    <MenuItem value="Game Changers">Game Changers</MenuItem>
-                    <MenuItem value="Fundamentals">Fundamentals</MenuItem>
-                    <MenuItem value="External Marketing">External Marketing</MenuItem>
-                    <MenuItem value="Internal Marketing">Internal Marketing</MenuItem>
+                    {tags.map((option) => (
+  <MenuItem key={option} value={option}>
+    {option}
+  </MenuItem>
+))}
+
+
                   </Select>
                 </FormControl>
               </Box>
